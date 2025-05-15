@@ -34,7 +34,7 @@
         .model-wrapper {
             width: 80%;
             max-width: 500px;
-            background-color: white;
+            background-color: #f0f0f0; /* Cinza claro para melhor contraste */
             padding: 15px;
             border-radius: 12px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
@@ -46,7 +46,9 @@
             height: 350px;
             --poster-color: transparent;
             border-radius: 8px;
-            background-color: white;
+            background-color: #f0f0f0;
+            --progress-bar-height: 5px;
+            --progress-bar-color: #8e1458;
         }
         
         #ar-button {
@@ -112,15 +114,18 @@
             ar-placement="floor"
             camera-controls
             auto-rotate
-            shadow-intensity="1.8"
-            exposure="1.5"
-            environment-image="neutral"
+            shadow-intensity="2"
+            exposure="2"
+            tone-mapping="commerce"
+            environment-image="legacy"
+            skybox-image="legacy"
             camera-orbit="0deg 70deg 1.5m"
+            interaction-prompt="none"
             touch-action="pan-y"
             min-camera-orbit="auto auto auto"
             max-camera-orbit="auto auto 100%"
             min-field-of-view="30deg"
-            style="background-color: white;">
+            style="background-color: #f0f0f0;">
 
             <button slot="ar-button" id="ar-button">
                 👁️ Ver Gelado em RA
@@ -154,6 +159,10 @@
                 modelViewer.setAttribute('ar-scale', 'fixed');
                 modelViewer.setAttribute('scale', '0.5 0.5 0.5');
                 
+                // Melhorar contraste para o modelo 3D
+                modelViewer.setAttribute('shadow-intensity', '2');
+                modelViewer.setAttribute('exposure', '2');
+                
                 // Verificar se o AR está disponível
                 if (modelViewer.canActivateAR) {
                     arInfo.textContent = "AR está disponível no teu dispositivo!";
@@ -171,6 +180,11 @@
             if (modelViewer && modelViewer.canActivateAR) {
                 // Garantir que a escala está a 50% antes de ativar o AR
                 modelViewer.setAttribute('scale', '0.5 0.5 0.5');
+                
+                // Garantir alto contraste para AR
+                modelViewer.setAttribute('shadow-intensity', '2');
+                modelViewer.setAttribute('exposure', '2');
+                
                 modelViewer.activateAR();
             } else {
                 arInfo.textContent = "Não foi possível ativar o AR. Certifica-te que estás a usar um dispositivo compatível e a aceder via HTTPS.";

@@ -7,186 +7,122 @@
     <!-- Importa o componente model-viewer -->
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <style>
-        :root {
-            --main-pink: #ff9eb5;
-            --dark-pink: #d4365c;
-            --white: #ffffff;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body { 
-            font-family: 'Arial', sans-serif; 
+            margin: 0; 
+            font-family: Arial, sans-serif; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
+            justify-content: center; 
             min-height: 100vh; 
-            background: linear-gradient(to bottom, var(--main-pink), #ffccd5);
+            background-color: #ffb6c1; /* Fundo rosa */
             text-align: center;
-            padding: 40px 20px;
-        }
-        
-        .container {
-            max-width: 800px;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            padding: 20px;
         }
         
         .logo {
-            width: 200px;
-            margin-bottom: 30px;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            max-width: 280px;
+            margin-bottom: 20px;
         }
         
         h1 {
-            color: var(--dark-pink);
-            margin: 0 0 40px 0;
+            color: #8e1458; /* Rosa mais escuro para contraste */
+            margin: 10px 0 30px 0;
             font-size: 26px;
-            font-weight: 700;
-            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
-            letter-spacing: 1px;
-        }
-        
-        .model-container {
-            width: 100%;
-            background-color: var(--white);
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
         }
         
         model-viewer {
-            width: 100%;
+            width: 80%;
+            max-width: 500px;
             height: 350px;
-            --poster-color: transparent;
-            background-color: #f5f5f5;
             border-radius: 12px;
-            overflow: hidden;
-        }
-        
-        .buttons-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
+            background-color: rgba(255, 255, 255, 0.5);
+            --poster-color: transparent;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         #ar-button {
-            padding: 14px 28px;
+            padding: 12px 20px;
             font-size: 16px;
-            background-color: var(--dark-pink);
-            color: var(--white);
+            background-color: #8e1458; /* Rosa mais escuro */
+            color: white;
             border: none;
-            border-radius: 30px;
+            border-radius: 25px;
             cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(212, 54, 92, 0.3);
+            margin-top: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         
         #ar-button-extra {
-            padding: 14px 28px;
+            padding: 12px 25px;
             font-size: 16px;
-            background-color: var(--dark-pink);
-            color: var(--white);
+            background-color: #8e1458;
+            color: white;
             border: none;
-            border-radius: 30px;
+            border-radius: 25px;
             cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(212, 54, 92, 0.3);
-        }
-        
-        #ar-button:hover, #ar-button-extra:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(212, 54, 92, 0.4);
+            margin-top: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         
         .ar-info {
-            color: var(--dark-pink);
+            color: #8e1458;
             font-weight: bold;
-            padding: 12px 20px;
-            background-color: var(--white);
-            border-radius: 30px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-top: 15px;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 8px 15px;
+            border-radius: 20px;
         }
         
         .instructions {
-            max-width: 90%;
-            background-color: var(--white);
-            padding: 20px 25px;
-            border-radius: 15px;
-            font-size: 15px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-            line-height: 1.5;
-        }
-        
-        .instructions ol {
-            text-align: left;
-            padding-left: 20px;
-            margin-top: 10px;
-        }
-        
-        .instructions li {
-            margin-bottom: 8px;
+            max-width: 500px;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Logotipo no topo -->
-        <img src="Assets/Gelatomnia logo__2.png" alt="Gelatomania Logo" class="logo">
-        
-        <h1>BEM VINDO AO MENU INTERATIVO DA GELATOMANIA</h1>
 
-        <div class="model-container">
-            <!-- Model viewer com configurações melhoradas -->
-            <model-viewer
-                id="meu-modelo"
-                src="Models/GELATI.glb"
-                alt="Um modelo 3D de gelado"
-                ar
-                ar-modes="webxr scene-viewer quick-look"
-                ar-scale="0.5"
-                camera-controls
-                auto-rotate
-                shadow-intensity="1.5"
-                exposure="1.2"
-                environment-image="neutral"
-                skybox-image="neutral"
-                camera-orbit="0deg 75deg 2m"
-                touch-action="pan-y"
-                style="background-color: transparent;">
+    <!-- Logotipo no topo -->
+    <img src="Assets/Gelatomnia logo__2.png" alt="Gelatomania Logo" class="logo">
+    
+    <h1>BEM VINDO AO MENU INTERATIVO DA GELATOMANIA</h1>
 
-                <button slot="ar-button" id="ar-button">
-                    👁️ Ver Gelado em RA
-                </button>
-            </model-viewer>
-        </div>
+    <!-- Model viewer com tamanho reduzido -->
+    <model-viewer
+        id="meu-modelo"
+        src="Models/GELATI.glb"
+        alt="Um modelo 3D de gelado"
+        ar
+        ar-modes="webxr scene-viewer quick-look"
+        ar-scale="0.5"
+        camera-controls
+        auto-rotate
+        shadow-intensity="1"
+        touch-action="pan-y"
+        style="background-color: transparent;">
 
-        <div class="buttons-container">
-            <!-- Botão AR adicional -->
-            <button id="ar-button-extra" onclick="ativarAR()">Ativar Realidade Aumentada</button>
-            <div class="ar-info" id="ar-info"></div>
-        </div>
+        <button slot="ar-button" id="ar-button">
+            👁️ Ver Gelado em RA
+        </button>
+    </model-viewer>
 
-        <div class="instructions">
-            <strong>Instruções:</strong>
-            <ol>
-                <li>Abre esta página no Safari do teu iPhone.</li>
-                <li>Toca no botão para ver em Realidade Aumentada.</li>
-                <li>Move o teu iPhone para detetar uma superfície.</li>
-                <li>Toca no ecrã para colocar o gelado no mundo real!</li>
-            </ol>
-        </div>
+    <!-- Botão AR adicional -->
+    <button id="ar-button-extra" onclick="ativarAR()">Ativar Realidade Aumentada</button>
+    <div class="ar-info" id="ar-info"></div>
+
+    <div class="instructions">
+        <strong>Instruções:</strong>
+        <ol>
+            <li>Abre esta página no Safari do teu iPhone.</li>
+            <li>Toca no botão para ver em Realidade Aumentada.</li>
+            <li>Move o teu iPhone para detetar uma superfície.</li>
+            <li>Toca no ecrã para colocar o gelado no mundo real!</li>
+        </ol>
     </div>
 
     <script>

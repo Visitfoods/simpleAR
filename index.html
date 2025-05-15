@@ -412,6 +412,41 @@
                         modelViewer.autoRotate = true;
                     }, 3000);
                 });
+                
+                // Adicionar event listeners específicos para AR
+                modelViewer.addEventListener('ar-status', (event) => {
+                    if (event.detail.status === 'session-started') {
+                        console.log('AR iniciada - aplicando rotação');
+                        
+                        // Forçar rotação no modelo em AR
+                        const forceARRotation = () => {
+                            if (modelViewer.isPresenting) {
+                                modelViewer.autoRotate = true;
+                                modelViewer.autoRotateDelay = 0;
+                                modelViewer.setAttribute('rotation-per-second', '30deg');
+                                
+                                // Adicionar animação de rotação via JavaScript
+                                let currentRotation = 0;
+                                const arRotationInterval = setInterval(() => {
+                                    if (modelViewer.isPresenting) {
+                                        currentRotation += 1;
+                                        // Aplicar rotação ao modelo
+                                        modelViewer.setAttribute('orientation', `0deg ${currentRotation}deg 0deg`);
+                                    } else {
+                                        // Limpar intervalo quando AR terminar
+                                        clearInterval(arRotationInterval);
+                                    }
+                                }, 50); // Rotação suave a cada 50ms
+                            }
+                        };
+                        
+                        // Tentar várias vezes para garantir que a rotação seja aplicada
+                        forceARRotation();
+                        setTimeout(forceARRotation, 500);
+                        setTimeout(forceARRotation, 1000);
+                        setTimeout(forceARRotation, 2000);
+                    }
+                });
             }
             
             // Adicionar efeito de hover nos elementos
@@ -438,15 +473,27 @@
                 // Garantir rotação no modo AR
                 modelViewer.autoRotate = true;
                 modelViewer.autoRotateDelay = 0;
+                modelViewer.setAttribute('rotation-per-second', '45deg'); // Velocidade aumentada para AR
                 
+                // Definir atributos adicionais para ajudar na rotação AR
+                modelViewer.setAttribute('disable-tap', true); // Impedir que toques parem a rotação
+                modelViewer.setAttribute('interaction-policy', 'allow-when-focused');
+                
+                // Ativar AR
                 modelViewer.activateAR();
                 
-                // Tentar manter a rotação ativa no AR
-                setTimeout(() => {
+                // Forçar rotação para AR
+                const initARRotation = () => {
                     if (modelViewer) {
                         modelViewer.autoRotate = true;
+                        console.log('Forçando rotação em AR');
                     }
-                }, 1000);
+                };
+                
+                // Tentar várias vezes para garantir que a rotação seja aplicada
+                setTimeout(initARRotation, 500);
+                setTimeout(initARRotation, 1500);
+                setTimeout(initARRotation, 3000);
             } else {
                 arInfo.textContent = "Não foi possível ativar o AR. Certifica-te que estás a usar um dispositivo compatível e a aceder via HTTPS.";
                 arInfo.style.color = "#F44336";

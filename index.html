@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RA Simples com GLB</title>
+    <!-- Importa o componente model-viewer -->
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <style>
+        body { margin: 0; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background-color: #f0f0f0; text-align: center; }
+        model-viewer {
+            width: 80%;
+            max-width: 600px;
+            height: 400px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        #ar-button {
+            display: none; /* Escondido por defeito, model-viewer tratará de mostrar o botão de RA se disponível */
+            padding: 12px 20px;
+            font-size: 16px;
+            background-color: #007aff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        p {
+            max-width: 600px;
+            padding: 0 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Visualizador de Modelo 3D e RA</h1>
+    <p>Vê o modelo abaixo. Se estiveres num dispositivo compatível (como um iPhone), verás um botão para o visualizar em Realidade Aumentada.</p>
+
+    <!-- 
+        Usa o componente model-viewer:
+        src="URL_DO_SEU_MODELO.glb" - substitui pelo link para o teu ficheiro .glb
+        ios-src="URL_DO_SEU_MODELO.usdz" - opcional, mas recomendado para melhor experiência no iOS. 
+                                         Se não tiveres, o model-viewer tenta converter o GLB.
+        ar - ativa o modo de Realidade Aumentada
+        ar-modes="webxr scene-viewer quick-look" - especifica os modos de RA a tentar
+        camera-controls - permite interagir com o modelo (rodar, zoom)
+        auto-rotate - faz o modelo rodar automaticamente
+        shadow-intensity="1" - controla a intensidade da sombra
+    -->
+    <model-viewer
+        id="meu-modelo"
+        src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+        ios-src="https://modelviewer.dev/shared-assets/models/Astronaut.usdz"
+        alt="Um modelo 3D de um astronauta"
+        ar
+        ar-modes="webxr scene-viewer quick-look"
+        camera-controls
+        auto-rotate
+        shadow-intensity="1"
+        touch-action="pan-y"
+        style="background-color: #e8e8e8;">
+
+        <div slot="poster" style="background-image: url('https://modelviewer.dev/shared-assets/models/poster-astronaut.png'); background-size: cover; background-position: center;"></div>
+        <button slot="ar-button" id="ar-button">
+            Ver em RA
+        </button>
+    </model-viewer>
+
+    <p>
+        <strong>Instruções:</strong>
+        <ol>
+            <li>Abre esta página no Safari do teu iPhone.</li>
+            <li>Toca no ícone de RA (geralmente um cubo ou um botão "Ver no seu espaço") que aparece no visualizador do modelo.</li>
+            <li>Move o teu iPhone para detetar uma superfície.</li>
+            <li>Toca no ecrã para colocar o objeto.</li>
+        </ol>
+    </p>
+    <p>
+        <strong>Para usar o teu próprio modelo:</strong>
+        <ol>
+            <li>Faz upload do teu ficheiro <code>.glb</code> (e <code>.usdz</code> se tiveres) para um serviço de alojamento (ex: GitHub Pages, Netlify, Glitch, ou o teu próprio servidor).</li>
+            <li>Substitui <code>"https://modelviewer.dev/shared-assets/models/Astronaut.glb"</code> pelo URL do teu ficheiro <code>.glb</code>.</li>
+            <li>Se tiveres um ficheiro <code>.usdz</code>, substitui também o valor de <code>ios-src</code>. Se não tiveres, podes remover o atributo <code>ios-src</code>, mas a experiência no iOS pode ser ligeiramente menos otimizada (o `model-viewer` tentará converter o GLB para USDZ em tempo real, ou o Quick Look fará o mesmo).</li>
+        </ol>
+    </p>
+
+</body>
+</html>

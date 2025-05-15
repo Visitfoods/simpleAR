@@ -108,14 +108,18 @@
             alt="Um modelo 3D de gelado"
             ar
             ar-modes="webxr scene-viewer quick-look"
-            ar-scale="0.5"
+            ar-scale="fixed"
+            ar-placement="floor"
             camera-controls
             auto-rotate
-            shadow-intensity="1.4"
-            exposure="1.2"
+            shadow-intensity="1.8"
+            exposure="1.5"
             environment-image="neutral"
             camera-orbit="0deg 70deg 1.5m"
             touch-action="pan-y"
+            min-camera-orbit="auto auto auto"
+            max-camera-orbit="auto auto 100%"
+            min-field-of-view="30deg"
             style="background-color: white;">
 
             <button slot="ar-button" id="ar-button">
@@ -144,7 +148,12 @@
             const modelViewer = document.querySelector('#meu-modelo');
             const arInfo = document.querySelector('#ar-info');
             
+            // Ajustar a escala do modelo para AR
             if (modelViewer) {
+                // Definir a escala inicial para 50%
+                modelViewer.setAttribute('ar-scale', 'fixed');
+                modelViewer.setAttribute('scale', '0.5 0.5 0.5');
+                
                 // Verificar se o AR está disponível
                 if (modelViewer.canActivateAR) {
                     arInfo.textContent = "AR está disponível no teu dispositivo!";
@@ -160,6 +169,8 @@
             const arInfo = document.querySelector('#ar-info');
             
             if (modelViewer && modelViewer.canActivateAR) {
+                // Garantir que a escala está a 50% antes de ativar o AR
+                modelViewer.setAttribute('scale', '0.5 0.5 0.5');
                 modelViewer.activateAR();
             } else {
                 arInfo.textContent = "Não foi possível ativar o AR. Certifica-te que estás a usar um dispositivo compatível e a aceder via HTTPS.";

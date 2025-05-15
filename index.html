@@ -300,6 +300,21 @@
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
+
+        /* Animações para AR */
+        @keyframes ar-fade-in {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        
+        @keyframes ar-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-30px); }
+        }
+        
+        .ar-model {
+            animation: ar-fade-in 1.5s ease-in-out, ar-bounce 1s ease-in-out 1.5s;
+        }
     </style>
 </head>
 <body>
@@ -416,7 +431,7 @@
                 // Adicionar event listeners específicos para AR
                 modelViewer.addEventListener('ar-status', (event) => {
                     if (event.detail.status === 'session-started') {
-                        console.log('AR iniciada - aplicando rotação');
+                        console.log('AR iniciada - aplicando efeitos');
                         
                         // Forçar rotação no modelo em AR
                         const forceARRotation = () => {
@@ -445,6 +460,86 @@
                         setTimeout(forceARRotation, 500);
                         setTimeout(forceARRotation, 1000);
                         setTimeout(forceARRotation, 2000);
+                    }
+                });
+                
+                // Adicionar efeitos especiais para AR (fade-in e bounce)
+                modelViewer.addEventListener('ar-status', (event) => {
+                    if (event.detail.status === 'object-placed') {
+                        console.log('Objeto colocado - aplicando efeitos visuais');
+                        
+                        // Aplicar efeito de fade-in
+                        const model = modelViewer.querySelector('model-viewer');
+                        if (model) {
+                            // Aplicar efeito de fade-in usando opacidade
+                            model.style.opacity = '0';
+                            setTimeout(() => {
+                                model.style.transition = 'opacity 1.5s ease-in-out';
+                                model.style.opacity = '1';
+                            }, 100);
+                        }
+                        
+                        // Aplicar classe para animações
+                        const applyAREffects = () => {
+                            if (modelViewer.isPresenting) {
+                                // Criar um elemento que envolve o modelo para aplicar animações
+                                const modelRoot = modelViewer.shadowRoot.querySelector('.container');
+                                if (modelRoot) {
+                                    modelRoot.classList.add('ar-model');
+                                    
+                                    // Animação de bounce mais elaborada
+                                    let bounceCount = 0;
+                                    const maxBounces = 3;
+                                    
+                                    const bounceAnimation = () => {
+                                        if (bounceCount < maxBounces && modelViewer.isPresenting) {
+                                            // Obter posição atual
+                                            const currentScale = modelViewer.getAttribute('scale') || '0.25 0.25 0.25';
+                                            const scaleValues = currentScale.split(' ').map(val => parseFloat(val));
+                                            
+                                            // Sequência de animação de bounce
+                                            const animateBounce = () => {
+                                                // Comprimir (achatamento)
+                                                setTimeout(() => {
+                                                    modelViewer.setAttribute('scale', `${scaleValues[0] * 1.1} ${scaleValues[1] * 0.9} ${scaleValues[2] * 1.1}`);
+                                                }, 0);
+                                                
+                                                // Esticar para cima
+                                                setTimeout(() => {
+                                                    modelViewer.setAttribute('scale', `${scaleValues[0] * 0.9} ${scaleValues[1] * 1.2} ${scaleValues[2] * 0.9}`);
+                                                }, 150);
+                                                
+                                                // Voltar ao normal com pequena oscilação
+                                                setTimeout(() => {
+                                                    modelViewer.setAttribute('scale', `${scaleValues[0] * 1.05} ${scaleValues[1] * 0.95} ${scaleValues[2] * 1.05}`);
+                                                }, 300);
+                                                
+                                                // Estabilizar
+                                                setTimeout(() => {
+                                                    modelViewer.setAttribute('scale', `${scaleValues[0]} ${scaleValues[1]} ${scaleValues[2]}`);
+                                                    bounceCount++;
+                                                    
+                                                    // Continuar com próximo bounce após um intervalo
+                                                    if (bounceCount < maxBounces) {
+                                                        setTimeout(animateBounce, 1000);
+                                                    }
+                                                }, 450);
+                                            };
+                                            
+                                            // Iniciar a sequência após um delay para dar tempo ao modelo aparecer
+                                            setTimeout(animateBounce, 1500);
+                                        }
+                                    };
+                                    
+                                    // Iniciar animação de bounce
+                                    bounceAnimation();
+                                }
+                            }
+                        };
+                        
+                        // Aplicar efeitos após um pequeno atraso
+                        setTimeout(applyAREffects, 200);
+                        setTimeout(applyAREffects, 500);
                     }
                 });
             }
@@ -478,6 +573,10 @@
                 // Definir atributos adicionais para ajudar na rotação AR
                 modelViewer.setAttribute('disable-tap', true); // Impedir que toques parem a rotação
                 modelViewer.setAttribute('interaction-policy', 'allow-when-focused');
+
+                // Definir atributos para animações AR
+                modelViewer.setAttribute('ar-placement', 'floor');
+                modelViewer.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
                 
                 // Ativar AR
                 modelViewer.activateAR();

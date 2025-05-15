@@ -387,9 +387,9 @@
             
             // Ajustar a escala do modelo para AR
             if (modelViewer) {
-                // Definir a escala inicial para 50%
+                // Definir a escala inicial para 25%
                 modelViewer.setAttribute('ar-scale', 'fixed');
-                modelViewer.setAttribute('scale', '0.5 0.5 0.5');
+                modelViewer.setAttribute('scale', '0.25 0.25 0.25');
                 
                 // Verificar se o AR está disponível
                 if (modelViewer.canActivateAR) {
@@ -418,8 +418,8 @@
             const arInfo = document.querySelector('#ar-info');
             
             if (modelViewer && modelViewer.canActivateAR) {
-                // Garantir que a escala está a 50% antes de ativar o AR
-                modelViewer.setAttribute('scale', '0.5 0.5 0.5');
+                // Garantir que a escala está a 25% antes de ativar o AR
+                modelViewer.setAttribute('scale', '0.25 0.25 0.25');
                 modelViewer.activateAR();
             } else {
                 arInfo.textContent = "Não foi possível ativar o AR. Certifica-te que estás a usar um dispositivo compatível e a aceder via HTTPS.";

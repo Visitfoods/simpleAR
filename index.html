@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RA Simples com GLB</title>
+    <title>Gelato em 3D e RA</title>
     <!-- Importa o componente model-viewer -->
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <style>
@@ -39,17 +39,16 @@
 </head>
 <body>
 
-    <h1>Visualizador de Modelo 3D e RA</h1>
-    <p>Vê o modelo abaixo. Se estiveres num dispositivo compatível (como um iPhone), verás um botão para o visualizar em Realidade Aumentada.</p>
+    <h1>Gelato 3D em Realidade Aumentada</h1>
+    <p>Vê o gelado abaixo. Se estiveres num dispositivo compatível (como um iPhone), verás um botão para o visualizar em Realidade Aumentada.</p>
 
     <!-- 
         Usa o componente model-viewer com configurações melhoradas para AR
     -->
     <model-viewer
         id="meu-modelo"
-        src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-        ios-src="https://modelviewer.dev/shared-assets/models/Astronaut.usdz"
-        alt="Um modelo 3D de um astronauta"
+        src="Models/GELATI.glb"
+        alt="Um modelo 3D de gelado"
         ar
         ar-modes="webxr scene-viewer quick-look"
         ar-scale="fixed"
@@ -59,9 +58,8 @@
         touch-action="pan-y"
         style="background-color: #e8e8e8;">
 
-        <div slot="poster" style="background-image: url('https://modelviewer.dev/shared-assets/models/poster-astronaut.png'); background-size: cover; background-position: center;"></div>
         <button slot="ar-button" id="ar-button">
-            👁️ Ver em RA
+            👁️ Ver Gelado em RA
         </button>
     </model-viewer>
 
@@ -75,15 +73,7 @@
             <li>Abre esta página no Safari do teu iPhone.</li>
             <li>Toca no ícone de RA (geralmente um cubo ou um botão "Ver no seu espaço") que aparece no visualizador do modelo.</li>
             <li>Move o teu iPhone para detetar uma superfície.</li>
-            <li>Toca no ecrã para colocar o objeto.</li>
-        </ol>
-    </p>
-    <p>
-        <strong>Para usar o teu próprio modelo:</strong>
-        <ol>
-            <li>Faz upload do teu ficheiro <code>.glb</code> (e <code>.usdz</code> se tiveres) para um serviço de alojamento (ex: GitHub Pages, Netlify, Glitch, ou o teu próprio servidor).</li>
-            <li>Substitui <code>"https://modelviewer.dev/shared-assets/models/Astronaut.glb"</code> pelo URL do teu ficheiro <code>.glb</code>.</li>
-            <li>Se tiveres um ficheiro <code>.usdz</code>, substitui também o valor de <code>ios-src</code>. Se não tiveres, podes remover o atributo <code>ios-src</code>, mas a experiência no iOS pode ser ligeiramente menos otimizada (o `model-viewer` tentará converter o GLB para USDZ em tempo real, ou o Quick Look fará o mesmo).</li>
+            <li>Toca no ecrã para colocar o gelado no mundo real!</li>
         </ol>
     </p>
 

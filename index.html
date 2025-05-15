@@ -324,6 +324,8 @@
                 ar-placement="floor"
                 camera-controls
                 auto-rotate
+                rotation-per-second="30deg"
+                auto-rotate-delay="0"
                 shadow-intensity="1.8"
                 exposure="1.5"
                 environment-image="neutral"
@@ -391,6 +393,11 @@
                 modelViewer.setAttribute('ar-scale', 'fixed');
                 modelViewer.setAttribute('scale', '0.25 0.25 0.25');
                 
+                // Garantir que a rotação automática está ativa e é contínua
+                modelViewer.autoRotate = true;
+                modelViewer.autoRotateDelay = 0;
+                modelViewer.setAttribute('rotation-per-second', '30deg');
+                
                 // Verificar se o AR está disponível
                 if (modelViewer.canActivateAR) {
                     arInfo.textContent = "AR está disponível no teu dispositivo!";
@@ -398,6 +405,13 @@
                 } else {
                     arInfo.textContent = "Infelizmente, o AR não parece estar disponível no teu dispositivo.";
                 }
+                
+                // Garantir que a rotação continue mesmo após interação
+                modelViewer.addEventListener('camera-change', () => {
+                    setTimeout(() => {
+                        modelViewer.autoRotate = true;
+                    }, 3000);
+                });
             }
             
             // Adicionar efeito de hover nos elementos
@@ -420,7 +434,19 @@
             if (modelViewer && modelViewer.canActivateAR) {
                 // Garantir que a escala está a 25% antes de ativar o AR
                 modelViewer.setAttribute('scale', '0.25 0.25 0.25');
+                
+                // Garantir rotação no modo AR
+                modelViewer.autoRotate = true;
+                modelViewer.autoRotateDelay = 0;
+                
                 modelViewer.activateAR();
+                
+                // Tentar manter a rotação ativa no AR
+                setTimeout(() => {
+                    if (modelViewer) {
+                        modelViewer.autoRotate = true;
+                    }
+                }, 1000);
             } else {
                 arInfo.textContent = "Não foi possível ativar o AR. Certifica-te que estás a usar um dispositivo compatível e a aceder via HTTPS.";
                 arInfo.style.color = "#F44336";

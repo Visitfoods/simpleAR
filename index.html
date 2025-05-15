@@ -17,7 +17,6 @@
             margin-bottom: 20px;
         }
         #ar-button {
-            display: none; /* Escondido por defeito, model-viewer tratará de mostrar o botão de RA se disponível */
             padding: 12px 20px;
             font-size: 16px;
             background-color: #007aff;
@@ -25,10 +24,16 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            margin-top: 10px;
         }
         p {
             max-width: 600px;
             padding: 0 20px;
+        }
+        .ar-info {
+            color: #ff3b30;
+            font-weight: bold;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -38,15 +43,7 @@
     <p>Vê o modelo abaixo. Se estiveres num dispositivo compatível (como um iPhone), verás um botão para o visualizar em Realidade Aumentada.</p>
 
     <!-- 
-        Usa o componente model-viewer:
-        src="URL_DO_SEU_MODELO.glb" - substitui pelo link para o teu ficheiro .glb
-        ios-src="URL_DO_SEU_MODELO.usdz" - opcional, mas recomendado para melhor experiência no iOS. 
-                                         Se não tiveres, o model-viewer tenta converter o GLB.
-        ar - ativa o modo de Realidade Aumentada
-        ar-modes="webxr scene-viewer quick-look" - especifica os modos de RA a tentar
-        camera-controls - permite interagir com o modelo (rodar, zoom)
-        auto-rotate - faz o modelo rodar automaticamente
-        shadow-intensity="1" - controla a intensidade da sombra
+        Usa o componente model-viewer com configurações melhoradas para AR
     -->
     <model-viewer
         id="meu-modelo"
@@ -55,6 +52,7 @@
         alt="Um modelo 3D de um astronauta"
         ar
         ar-modes="webxr scene-viewer quick-look"
+        ar-scale="fixed"
         camera-controls
         auto-rotate
         shadow-intensity="1"
@@ -63,9 +61,13 @@
 
         <div slot="poster" style="background-image: url('https://modelviewer.dev/shared-assets/models/poster-astronaut.png'); background-size: cover; background-position: center;"></div>
         <button slot="ar-button" id="ar-button">
-            Ver em RA
+            👁️ Ver em RA
         </button>
     </model-viewer>
+
+    <!-- Botão AR adicional para garantir visibilidade -->
+    <button id="ar-button-extra" onclick="ativarAR()">Ativar Realidade Aumentada</button>
+    <div class="ar-info" id="ar-info"></div>
 
     <p>
         <strong>Instruções:</strong>
@@ -85,5 +87,33 @@
         </ol>
     </p>
 
+    <script>
+        // Verificar se o dispositivo suporta AR
+        document.addEventListener('DOMContentLoaded', function() {
+            const modelViewer = document.querySelector('#meu-modelo');
+            const arInfo = document.querySelector('#ar-info');
+            
+            if (modelViewer) {
+                // Verificar se o AR está disponível
+                if (modelViewer.canActivateAR) {
+                    arInfo.textContent = "AR está disponível no teu dispositivo!";
+                } else {
+                    arInfo.textContent = "Infelizmente, o AR não parece estar disponível no teu dispositivo.";
+                }
+            }
+        });
+
+        // Função para ativar AR através do botão adicional
+        function ativarAR() {
+            const modelViewer = document.querySelector('#meu-modelo');
+            const arInfo = document.querySelector('#ar-info');
+            
+            if (modelViewer && modelViewer.canActivateAR) {
+                modelViewer.activateAR();
+            } else {
+                arInfo.textContent = "Não foi possível ativar o AR. Certifica-te que estás a usar um dispositivo compatível e a aceder via HTTPS.";
+            }
+        }
+    </script>
 </body>
 </html>

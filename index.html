@@ -374,7 +374,7 @@
 
         /* Estilos para HUD (Heads-Up Display) em AR */
         .ar-hud {
-            position: fixed;
+            position: absolute;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
@@ -550,56 +550,59 @@
 
     <!-- Wrapper para melhorar o contraste do modelo -->
         <div class="model-wrapper slide-up" data-aos="zoom-in" data-aos-duration="1200">
-        <!-- Model viewer com configurações melhoradas para contraste -->
-        <model-viewer
-            id="meu-modelo"
-            src="Models/GELATI.glb"
-            alt="Um modelo 3D de gelado"
-            ar
-            ar-modes="webxr scene-viewer quick-look"
-            ar-scale="fixed"
-            ar-placement="floor"
-            camera-controls
-            auto-rotate
-                rotation-per-second="30deg"
-                auto-rotate-delay="0"
-            shadow-intensity="1.8"
-            exposure="1.5"
-            environment-image="neutral"
-            camera-orbit="0deg 70deg 1.5m"
-            touch-action="pan-y"
-            min-camera-orbit="auto auto auto"
-            max-camera-orbit="auto auto 100%"
-            min-field-of-view="30deg"
-            style="background-color: white;">
+        <!-- Importante: Envolver o model-viewer num ZStack para sobrepor UI -->
+        <div style="position: relative; width: 100%; height: 100%;">
+            <!-- Model viewer com configurações melhoradas para contraste -->
+            <model-viewer
+                id="meu-modelo"
+                src="Models/GELATI.glb"
+                alt="Um modelo 3D de gelado"
+                ar
+                ar-modes="webxr scene-viewer quick-look"
+                ar-scale="fixed"
+                ar-placement="floor"
+                camera-controls
+                auto-rotate
+                    rotation-per-second="30deg"
+                    auto-rotate-delay="0"
+                shadow-intensity="1.8"
+                exposure="1.5"
+                environment-image="neutral"
+                camera-orbit="0deg 70deg 1.5m"
+                touch-action="pan-y"
+                min-camera-orbit="auto auto auto"
+                max-camera-orbit="auto auto 100%"
+                min-field-of-view="30deg"
+                style="background-color: white; width: 100%; height: 400px;">
 
-                <!-- Overlay para o texto AR -->
-                <div class="ar-text-wrapper" id="ar-text-wrapper">
-                    <div class="ar-text">COPA DE MORANGO</div>
+                    <!-- Hotspots para informações no espaço 3D -->
+                    <button class="hotspot" slot="hotspot-1" data-position="0 0.2 0" data-normal="0 1 0" data-visibility-attribute="visible">
+                        <div class="hotspot-annotation">Morango Fresco</div>
+                    </button>
+                    <button class="hotspot" slot="hotspot-2" data-position="0 0.1 0" data-normal="0 1 0" data-visibility-attribute="visible">
+                        <div class="hotspot-annotation">Chantilly Caseiro</div>
+                    </button>
+
+                    <button slot="ar-button" id="ar-button" class="btn btn-primary">
+                        <i class="fas fa-eye"></i> Ver Gelado em RA
+                    </button>
+            </model-viewer>
+            
+            <!-- Overlay para o texto AR - Agora fora do model-viewer, mas sobreposto a ele -->
+            <div class="ar-text-wrapper" id="ar-text-wrapper">
+                <div class="ar-text">COPA DE MORANGO</div>
+            </div>
+            
+            <!-- HUD para AR - UI 2D sobreposta ao model-viewer -->
+            <div class="ar-hud" id="ar-hud">
+                <div class="ar-hud-title">Copa de Morango</div>
+                <div class="ar-hud-price">4,50 €</div>
+                <div class="ar-hud-desc">Deliciosa copa de gelado com morangos frescos, chantilly caseiro e calda de frutos vermelhos.</div>
+                <div class="ar-hud-buttons">
+                    <button class="ar-hud-button" id="ar-hud-info">Detalhes</button>
+                    <button class="ar-hud-button" id="ar-hud-close">Fechar</button>
                 </div>
-
-                <!-- Hotspots para informações no espaço 3D -->
-                <button class="hotspot" slot="hotspot-1" data-position="0 0.2 0" data-normal="0 1 0" data-visibility-attribute="visible">
-                    <div class="hotspot-annotation">Morango Fresco</div>
-                </button>
-                <button class="hotspot" slot="hotspot-2" data-position="0 0.1 0" data-normal="0 1 0" data-visibility-attribute="visible">
-                    <div class="hotspot-annotation">Chantilly Caseiro</div>
-                </button>
-
-                <button slot="ar-button" id="ar-button" class="btn btn-primary">
-                    <i class="fas fa-eye"></i> Ver Gelado em RA
-                </button>
-        </model-viewer>
-    </div>
-
-    <!-- HUD para AR - Interface 2D que aparece durante a experiência AR -->
-    <div class="ar-hud" id="ar-hud">
-        <div class="ar-hud-title">Copa de Morango</div>
-        <div class="ar-hud-price">4,50 €</div>
-        <div class="ar-hud-desc">Deliciosa copa de gelado com morangos frescos, chantilly caseiro e calda de frutos vermelhos.</div>
-        <div class="ar-hud-buttons">
-            <button class="ar-hud-button" id="ar-hud-info">Detalhes</button>
-            <button class="ar-hud-button" id="ar-hud-close">Fechar</button>
+            </div>
         </div>
     </div>
 
@@ -662,14 +665,14 @@
             }
             
             if (arHud) {
-                arHud.classList.remove('visible');
+                arHud.style.opacity = '0';
             }
             
             // Configurar botões do HUD
             const hudCloseBtn = document.getElementById('ar-hud-close');
             if (hudCloseBtn) {
                 hudCloseBtn.addEventListener('click', () => {
-                    arHud.classList.remove('visible');
+                    arHud.style.opacity = '0';
                 });
             }
             
@@ -719,7 +722,7 @@
                         
                         // Esconder HUD inicialmente
                         if (arHud) {
-                            arHud.classList.remove('visible');
+                            arHud.style.opacity = '0';
                         }
                         
                         // Forçar rotação no modelo em AR
@@ -778,7 +781,7 @@
                         // Mostrar o HUD após o modelo ser colocado
                         if (arHud) {
                             setTimeout(() => {
-                                arHud.classList.add('visible');
+                                arHud.style.opacity = '1';
                             }, 1500); // Mostrar HUD após 1.5 segundos
                         }
                         
@@ -861,7 +864,7 @@
                             const hudTitle = arHud.querySelector('.ar-hud-title');
                             if (hudTitle && annotation) {
                                 hudTitle.textContent = annotation.textContent;
-                                arHud.classList.add('visible');
+                                arHud.style.opacity = '1';
                             }
                         }
                     });
@@ -894,7 +897,7 @@
             
             // Esconder HUD inicialmente
             if (arHud) {
-                arHud.classList.remove('visible');
+                arHud.style.opacity = '0';
             }
             
             if (modelViewer && modelViewer.canActivateAR) {

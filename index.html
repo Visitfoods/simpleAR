@@ -609,6 +609,86 @@
             border: 2px solid var(--primary-color);
             pointer-events: none;
         }
+        
+        /* Modal para aviso prévio para iOS */
+        .ios-ar-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .ios-ar-modal.active {
+            display: flex;
+        }
+        
+        .ios-ar-modal-content {
+            background-color: white;
+            border-radius: 20px;
+            width: 85%;
+            max-width: 450px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        
+        .ios-ar-modal-title {
+            font-size: 22px;
+            color: var(--secondary-color);
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .ios-ar-modal-desc {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .ios-ar-modal-image {
+            width: 100%;
+            max-width: 280px;
+            margin: 15px auto;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid var(--light-color);
+        }
+        
+        .ios-ar-modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .ios-ar-modal-button {
+            padding: 12px 25px;
+            border-radius: 25px;
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .ios-ar-modal-button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .ios-ar-modal-button.secondary {
+            background-color: #e5e5e5;
+            color: #333;
+        }
     </style>
 </head>
 <body>
@@ -729,6 +809,25 @@
             <div class="ios-hud-title">Copa de Morango</div>
             <div class="ios-hud-price">4,50 €</div>
             <div class="ios-hud-desc">Deliciosa copa de gelado com morangos frescos, chantilly caseiro e calda de frutos vermelhos.</div>
+        </div>
+    </div>
+    
+    <!-- Modal para utilizadores iOS -->
+    <div id="ios-ar-modal" class="ios-ar-modal">
+        <div class="ios-ar-modal-content">
+            <div class="ios-ar-modal-title">Informação sobre AR no iPhone</div>
+            <div class="ios-ar-modal-desc">
+                Estás prestes a entrar no modo de Realidade Aumentada com o QuickLook da Apple.
+                <br><br>
+                <strong>Informações do produto:</strong>
+            </div>
+            <div class="ios-hud-title" style="text-align: center;">Copa de Morango</div>
+            <div class="ios-hud-price" style="text-align: center;">4,50 €</div>
+            <div class="ios-hud-desc" style="text-align: center;">Deliciosa copa de gelado com morangos frescos, chantilly caseiro e calda de frutos vermelhos.</div>
+            <div class="ios-ar-modal-buttons">
+                <button class="ios-ar-modal-button secondary" id="ios-ar-modal-close">Voltar</button>
+                <button class="ios-ar-modal-button" id="ios-ar-modal-continue">Continuar</button>
+            </div>
         </div>
     </div>
 
@@ -975,6 +1074,7 @@
             const arTextWrapper = document.querySelector('#ar-text-wrapper');
             const arHud = document.querySelector('#ar-hud');
             const iosOverlay = document.querySelector('#ios-ar-overlay');
+            const iosModal = document.querySelector('#ios-ar-modal');
             
             // Esconder completamente os elementos UI
             if (arTextWrapper) {
@@ -992,68 +1092,93 @@
             const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
             
             if (isIOS && isSafari) {
-                // Preparar overlay iOS (será ativado quando o utilizador entrar em AR)
-                if (iosOverlay) {
-                    // Usar setTimeout para garantir que este código executa APÓS o AR ser iniciado
-                    setTimeout(() => {
-                        iosOverlay.classList.add('active');
-                        console.log('Ativando overlay iOS para QuickLook');
-                    }, 1000);
+                // Mostrar modal explicativo antes de entrar em AR
+                if (iosModal) {
+                    iosModal.classList.add('active');
+                    
+                    // Configurar botões do modal
+                    const closeBtn = document.getElementById('ios-ar-modal-close');
+                    const continueBtn = document.getElementById('ios-ar-modal-continue');
+                    
+                    if (closeBtn) {
+                        closeBtn.addEventListener('click', () => {
+                            iosModal.classList.remove('active');
+                        });
+                    }
+                    
+                    if (continueBtn) {
+                        continueBtn.addEventListener('click', () => {
+                            // Fechar o modal
+                            iosModal.classList.remove('active');
+                            
+                            // Iniciar AR
+                            iniciarARPadrao();
+                        });
+                    }
+                    
+                    // Não prosseguir para AR imediatamente
+                    return;
                 }
             }
             
-            if (modelViewer && modelViewer.canActivateAR) {
-                // Garantir que a escala está a 25% antes de ativar o AR
-                modelViewer.setAttribute('scale', '0.25 0.25 0.25');
-                
-                // Garantir rotação no modo AR
-                modelViewer.autoRotate = true;
-                modelViewer.autoRotateDelay = 0;
-                modelViewer.setAttribute('rotation-per-second', '45deg'); // Velocidade aumentada para AR
-                
-                // Definir atributos adicionais para ajudar na rotação AR
-                modelViewer.setAttribute('disable-tap', true); // Impedir que toques parem a rotação
-                modelViewer.setAttribute('interaction-policy', 'allow-when-focused');
-
-                // Definir atributos para animações AR
-                modelViewer.setAttribute('ar-placement', 'floor');
-                modelViewer.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
-                
-                // Ativar AR
-                modelViewer.activateAR();
-                
-                // Forçar rotação para AR
-                const initARRotation = () => {
-                    if (modelViewer) {
-                        modelViewer.autoRotate = true;
-                        console.log('Forçando rotação em AR');
-                    }
-                };
-                
-                // Tentar várias vezes para garantir que a rotação seja aplicada
-                setTimeout(initARRotation, 500);
-                setTimeout(initARRotation, 1500);
-                setTimeout(initARRotation, 3000);
-                
-                // Especial para iOS: adicionar evento de saída de AR
-                if (isIOS && isSafari) {
-                    // Verificar quando o utilizador sai do AR
-                    document.addEventListener('visibilitychange', function() {
-                        if (!document.hidden && iosOverlay.classList.contains('active')) {
-                            // Esconder overlay quando utilizador volta da experiência AR
-                            iosOverlay.classList.remove('active');
+            // Se não for iOS, ou se o utilizador escolher continuar, prosseguir normalmente
+            iniciarARPadrao();
+            
+            // Função encapsulada para iniciar AR
+            function iniciarARPadrao() {
+                if (modelViewer && modelViewer.canActivateAR) {
+                    // Garantir que a escala está a 25% antes de ativar o AR
+                    modelViewer.setAttribute('scale', '0.25 0.25 0.25');
+                    
+                    // Garantir rotação no modo AR
+                    modelViewer.autoRotate = true;
+                    modelViewer.autoRotateDelay = 0;
+                    modelViewer.setAttribute('rotation-per-second', '45deg'); // Velocidade aumentada para AR
+                    
+                    // Definir atributos adicionais para ajudar na rotação AR
+                    modelViewer.setAttribute('disable-tap', true); // Impedir que toques parem a rotação
+                    modelViewer.setAttribute('interaction-policy', 'allow-when-focused');
+    
+                    // Definir atributos para animações AR
+                    modelViewer.setAttribute('ar-placement', 'floor');
+                    modelViewer.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
+                    
+                    // Ativar AR
+                    modelViewer.activateAR();
+                    
+                    // Forçar rotação para AR
+                    const initARRotation = () => {
+                        if (modelViewer) {
+                            modelViewer.autoRotate = true;
+                            console.log('Forçando rotação em AR');
                         }
-                    });
+                    };
+                    
+                    // Tentar várias vezes para garantir que a rotação seja aplicada
+                    setTimeout(initARRotation, 500);
+                    setTimeout(initARRotation, 1500);
+                    setTimeout(initARRotation, 3000);
+                    
+                    // Especial para iOS: adicionar evento de saída de AR
+                    if (isIOS && isSafari) {
+                        // Verificar quando o utilizador sai do AR
+                        document.addEventListener('visibilitychange', function() {
+                            if (!document.hidden && iosOverlay.classList.contains('active')) {
+                                // Esconder overlay quando utilizador volta da experiência AR
+                                iosOverlay.classList.remove('active');
+                            }
+                        });
+                    }
+                } else {
+                    arInfo.textContent = "Não foi possível ativar o AR. Certifica-te que estás a usar um dispositivo compatível e a aceder via HTTPS.";
+                    arInfo.style.color = "#F44336";
+                    
+                    // Mostrar animação de erro
+                    arInfo.classList.add('shake');
+                    setTimeout(() => {
+                        arInfo.classList.remove('shake');
+                    }, 1000);
                 }
-            } else {
-                arInfo.textContent = "Não foi possível ativar o AR. Certifica-te que estás a usar um dispositivo compatível e a aceder via HTTPS.";
-                arInfo.style.color = "#F44336";
-                
-                // Mostrar animação de erro
-                arInfo.classList.add('shake');
-                setTimeout(() => {
-                    arInfo.classList.remove('shake');
-                }, 1000);
             }
         }
     </script>

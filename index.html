@@ -541,6 +541,74 @@
         .shake {
             animation: shake 0.5s ease-in-out;
         }
+        
+        /* Estilos para iOS QuickLook AR */
+        .ios-ar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            pointer-events: none;
+        }
+
+        .ios-ar-overlay.active {
+            display: flex;
+        }
+        
+        .ios-hud {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 18px 20px;
+            margin-bottom: 50px;
+            width: 85%;
+            max-width: 420px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            border: 2px solid var(--primary-color);
+            pointer-events: auto;
+        }
+        
+        .ios-hud-title {
+            font-size: 20px;
+            color: var(--secondary-color);
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .ios-hud-price {
+            font-size: 18px;
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .ios-hud-desc {
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 15px;
+        }
+        
+        .ios-ar-label {
+            position: fixed;
+            top: 25%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-family: 'Dancing Script', cursive;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            border: 2px solid var(--primary-color);
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -650,6 +718,17 @@
 
         <div class="footer" data-aos="fade-up" data-aos-duration="800" data-aos-delay="500">
             © 2023 Gelatomania - Gelataria Italiana | <a href="https://github.com/gelatomania/simpleAR" target="_blank" rel="noopener noreferrer" style="color: var(--secondary-color); text-decoration: underline;">Ver no GitHub</a>
+        </div>
+    </div>
+
+    <!-- Overlay específico para iOS AR QuickLook -->
+    <div id="ios-ar-overlay" class="ios-ar-overlay">
+        <div class="ios-ar-label">COPA DE MORANGO</div>
+        
+        <div class="ios-hud">
+            <div class="ios-hud-title">Copa de Morango</div>
+            <div class="ios-hud-price">4,50 €</div>
+            <div class="ios-hud-desc">Deliciosa copa de gelado com morangos frescos, chantilly caseiro e calda de frutos vermelhos.</div>
         </div>
     </div>
 
@@ -895,6 +974,7 @@
             const arInfo = document.querySelector('#ar-info');
             const arTextWrapper = document.querySelector('#ar-text-wrapper');
             const arHud = document.querySelector('#ar-hud');
+            const iosOverlay = document.querySelector('#ios-ar-overlay');
             
             // Esconder completamente os elementos UI
             if (arTextWrapper) {
@@ -905,6 +985,21 @@
             if (arHud) {
                 arHud.style.display = 'none';
                 arHud.style.opacity = '0';
+            }
+            
+            // Detetar se é iOS (Safari) para usar sistema de overlay alternativo
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+            
+            if (isIOS && isSafari) {
+                // Preparar overlay iOS (será ativado quando o utilizador entrar em AR)
+                if (iosOverlay) {
+                    // Usar setTimeout para garantir que este código executa APÓS o AR ser iniciado
+                    setTimeout(() => {
+                        iosOverlay.classList.add('active');
+                        console.log('Ativando overlay iOS para QuickLook');
+                    }, 1000);
+                }
             }
             
             if (modelViewer && modelViewer.canActivateAR) {
@@ -939,6 +1034,17 @@
                 setTimeout(initARRotation, 500);
                 setTimeout(initARRotation, 1500);
                 setTimeout(initARRotation, 3000);
+                
+                // Especial para iOS: adicionar evento de saída de AR
+                if (isIOS && isSafari) {
+                    // Verificar quando o utilizador sai do AR
+                    document.addEventListener('visibilitychange', function() {
+                        if (!document.hidden && iosOverlay.classList.contains('active')) {
+                            // Esconder overlay quando utilizador volta da experiência AR
+                            iosOverlay.classList.remove('active');
+                        }
+                    });
+                }
             } else {
                 arInfo.textContent = "Não foi possível ativar o AR. Certifica-te que estás a usar um dispositivo compatível e a aceder via HTTPS.";
                 arInfo.style.color = "#F44336";

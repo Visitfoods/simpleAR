@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Gelatomania">
+    <meta name="description" content="Menu interativo com Realidade Aumentada da Gelatomania">
+    <meta name="keywords" content="gelado, AR, realidade aumentada, menu interativo, gelatomania">
     <title>Gelatomania - Menu Interativo</title>
     <!-- Importa o componente model-viewer -->
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
@@ -368,54 +371,239 @@
             0%, 100% { transform: translateY(-80px); }
             50% { transform: translateY(-90px); }
         }
+
+        /* Estilos para HUD (Heads-Up Display) em AR */
+        .ar-hud {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px 20px;
+            box-shadow: var(--shadow);
+            z-index: 2000;
+            width: 80%;
+            max-width: 400px;
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            pointer-events: auto;
+            border: 2px solid var(--primary-color);
+        }
+
+        .ar-hud.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .ar-hud-title {
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+            font-size: 18px;
+        }
+
+        .ar-hud-price {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .ar-hud-desc {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .ar-hud-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .ar-hud-button {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            flex: 1;
+            transition: background 0.3s ease;
+        }
+
+        .ar-hud-button:hover {
+            background: var(--secondary-color);
+        }
+
+        /* Estilos para etiquetas 3D no mundo */
+        .ar-world-label {
+            position: absolute;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 1500;
+        }
+
+        .ar-world-label.visible {
+            opacity: 1;
+        }
+
+        .ar-hotspot {
+            display: block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            border: 2px solid white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            animation: pulse 2s infinite;
+        }
+
+        /* Estilos para hotspots */
+        .hotspot {
+            display: block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            background-color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .hotspot:hover {
+            transform: scale(1.2);
+        }
+
+        .hotspot::before {
+            content: '+';
+            color: white;
+            font-size: 24px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .hotspot-annotation {
+            position: absolute;
+            background-color: white;
+            border-radius: 10px;
+            padding: 10px;
+            width: max-content;
+            max-width: 200px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            font-size: 14px;
+            color: var(--secondary-color);
+            font-weight: 600;
+            pointer-events: none;
+            transform: translateY(-100%);
+            margin-top: -15px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100%);
+            display: none;
+            z-index: 10;
+        }
+
+        .hotspot-annotation::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid white;
+        }
+
+        /* Animação de shake para erros */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header" data-aos="fade-down" data-aos-duration="1000">
-            <!-- Logotipo no topo -->
+    <!-- Logotipo no topo -->
             <img src="Assets/Gelatomnia logo__2.png" alt="Gelatomania Logo" class="logo pulsate">
-            
+    
             <h1 class="fade-in">BEM VINDO AO MENU INTERATIVO DA GELATOMANIA</h1>
         </div>
 
-        <!-- Wrapper para melhorar o contraste do modelo -->
+    <!-- Wrapper para melhorar o contraste do modelo -->
         <div class="model-wrapper slide-up" data-aos="zoom-in" data-aos-duration="1200">
-            <!-- Model viewer com configurações melhoradas para contraste -->
-            <model-viewer
-                id="meu-modelo"
-                src="Models/GELATI.glb"
-                alt="Um modelo 3D de gelado"
-                ar
-                ar-modes="webxr scene-viewer quick-look"
-                ar-scale="fixed"
-                ar-placement="floor"
-                camera-controls
-                auto-rotate
+        <!-- Model viewer com configurações melhoradas para contraste -->
+        <model-viewer
+            id="meu-modelo"
+            src="Models/GELATI.glb"
+            alt="Um modelo 3D de gelado"
+            ar
+            ar-modes="webxr scene-viewer quick-look"
+            ar-scale="fixed"
+            ar-placement="floor"
+            camera-controls
+            auto-rotate
                 rotation-per-second="30deg"
                 auto-rotate-delay="0"
-                shadow-intensity="1.8"
-                exposure="1.5"
-                environment-image="neutral"
-                camera-orbit="0deg 70deg 1.5m"
-                touch-action="pan-y"
-                min-camera-orbit="auto auto auto"
-                max-camera-orbit="auto auto 100%"
-                min-field-of-view="30deg"
-                style="background-color: white;">
+            shadow-intensity="1.8"
+            exposure="1.5"
+            environment-image="neutral"
+            camera-orbit="0deg 70deg 1.5m"
+            touch-action="pan-y"
+            min-camera-orbit="auto auto auto"
+            max-camera-orbit="auto auto 100%"
+            min-field-of-view="30deg"
+            style="background-color: white;">
 
                 <!-- Overlay para o texto AR -->
                 <div class="ar-text-wrapper" id="ar-text-wrapper">
                     <div class="ar-text">COPA DE MORANGO</div>
                 </div>
 
+                <!-- Hotspots para informações no espaço 3D -->
+                <button class="hotspot" slot="hotspot-1" data-position="0 0.2 0" data-normal="0 1 0" data-visibility-attribute="visible">
+                    <div class="hotspot-annotation">Morango Fresco</div>
+                </button>
+                <button class="hotspot" slot="hotspot-2" data-position="0 0.1 0" data-normal="0 1 0" data-visibility-attribute="visible">
+                    <div class="hotspot-annotation">Chantilly Caseiro</div>
+                </button>
+
                 <button slot="ar-button" id="ar-button" class="btn btn-primary">
                     <i class="fas fa-eye"></i> Ver Gelado em RA
                 </button>
-            </model-viewer>
-        </div>
+        </model-viewer>
+    </div>
 
-        <!-- Botão AR adicional -->
+    <!-- HUD para AR - Interface 2D que aparece durante a experiência AR -->
+    <div class="ar-hud" id="ar-hud">
+        <div class="ar-hud-title">Copa de Morango</div>
+        <div class="ar-hud-price">4,50 €</div>
+        <div class="ar-hud-desc">Deliciosa copa de gelado com morangos frescos, chantilly caseiro e calda de frutos vermelhos.</div>
+        <div class="ar-hud-buttons">
+            <button class="ar-hud-button" id="ar-hud-info">Detalhes</button>
+            <button class="ar-hud-button" id="ar-hud-close">Fechar</button>
+        </div>
+    </div>
+
+    <!-- Botão AR adicional -->
         <button id="ar-button-extra" class="btn" onclick="ativarAR()" data-aos="fade-up" data-aos-duration="800">
             <i class="fas fa-cube rotate-icon"></i> Ativar Realidade Aumentada
         </button>
@@ -424,12 +612,12 @@
 
         <div class="instructions" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300">
             <strong><i class="fas fa-info-circle"></i> Instruções</strong>
-            <ol>
-                <li>Abre esta página no Safari do teu iPhone.</li>
-                <li>Toca no botão para ver em Realidade Aumentada.</li>
-                <li>Move o teu iPhone para detetar uma superfície.</li>
-                <li>Toca no ecrã para colocar o gelado no mundo real!</li>
-            </ol>
+        <ol>
+            <li>Abre esta página no Safari do teu iPhone.</li>
+            <li>Toca no botão para ver em Realidade Aumentada.</li>
+            <li>Move o teu iPhone para detetar uma superfície.</li>
+            <li>Toca no ecrã para colocar o gelado no mundo real!</li>
+        </ol>
         </div>
 
         <div class="icon-container" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="400">
@@ -445,10 +633,16 @@
                 <i class="fas fa-camera"></i>
                 <span>Interativo</span>
             </div>
+            <div class="icon-box">
+                <a href="https://github.com/gelatomania/simpleAR" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
+                    <i class="fab fa-github"></i>
+                    <span>GitHub</span>
+                </a>
+            </div>
         </div>
 
         <div class="footer" data-aos="fade-up" data-aos-duration="800" data-aos-delay="500">
-            © 2023 Gelatomania - Gelataria Italiana
+            © 2023 Gelatomania - Gelataria Italiana | <a href="https://github.com/gelatomania/simpleAR" target="_blank" rel="noopener noreferrer" style="color: var(--secondary-color); text-decoration: underline;">Ver no GitHub</a>
         </div>
     </div>
 
@@ -460,10 +654,31 @@
             const modelViewer = document.querySelector('#meu-modelo');
             const arInfo = document.querySelector('#ar-info');
             const arTextWrapper = document.querySelector('#ar-text-wrapper');
+            const arHud = document.querySelector('#ar-hud');
             
-            // Esconder o texto inicialmente
+            // Esconder o texto e HUD inicialmente
             if (arTextWrapper) {
                 arTextWrapper.style.opacity = '0';
+            }
+            
+            if (arHud) {
+                arHud.classList.remove('visible');
+            }
+            
+            // Configurar botões do HUD
+            const hudCloseBtn = document.getElementById('ar-hud-close');
+            if (hudCloseBtn) {
+                hudCloseBtn.addEventListener('click', () => {
+                    arHud.classList.remove('visible');
+                });
+            }
+            
+            const hudInfoBtn = document.getElementById('ar-hud-info');
+            if (hudInfoBtn) {
+                hudInfoBtn.addEventListener('click', () => {
+                    // Aqui poderia abrir mais detalhes ou mudar o conteúdo do HUD
+                    alert('Gelado artesanal italiano feito com morangos frescos e chantilly caseiro.');
+                });
             }
             
             // Ajustar a escala do modelo para AR
@@ -500,6 +715,11 @@
                         // Reiniciar o texto AR (garantir que está escondido)
                         if (arTextWrapper) {
                             arTextWrapper.style.opacity = '0';
+                        }
+                        
+                        // Esconder HUD inicialmente
+                        if (arHud) {
+                            arHud.classList.remove('visible');
                         }
                         
                         // Forçar rotação no modelo em AR
@@ -553,6 +773,13 @@
                             setTimeout(() => {
                                 arTextWrapper.style.opacity = '1';
                             }, 1000); // Mostrar texto após 1 segundo
+                        }
+                        
+                        // Mostrar o HUD após o modelo ser colocado
+                        if (arHud) {
+                            setTimeout(() => {
+                                arHud.classList.add('visible');
+                            }, 1500); // Mostrar HUD após 1.5 segundos
                         }
                         
                         // Aplicar classe para animações
@@ -618,6 +845,27 @@
                         setTimeout(applyAREffects, 500);
                     }
                 });
+                
+                // Adicionar suporte para hotspots
+                modelViewer.querySelectorAll('button.hotspot').forEach((hotspot) => {
+                    hotspot.addEventListener('click', () => {
+                        const annotation = hotspot.querySelector('.hotspot-annotation');
+                        
+                        // Mostrar/esconder a anotação
+                        if (annotation) {
+                            annotation.style.display = annotation.style.display === 'none' ? 'block' : 'none';
+                        }
+                        
+                        // Atualizar o HUD com informações do hotspot
+                        if (arHud && modelViewer.isPresenting) {
+                            const hudTitle = arHud.querySelector('.ar-hud-title');
+                            if (hudTitle && annotation) {
+                                hudTitle.textContent = annotation.textContent;
+                                arHud.classList.add('visible');
+                            }
+                        }
+                    });
+                });
             }
             
             // Adicionar efeito de hover nos elementos
@@ -637,10 +885,16 @@
             const modelViewer = document.querySelector('#meu-modelo');
             const arInfo = document.querySelector('#ar-info');
             const arTextWrapper = document.querySelector('#ar-text-wrapper');
+            const arHud = document.querySelector('#ar-hud');
             
             // Preparar o texto para AR
             if (arTextWrapper) {
                 arTextWrapper.style.opacity = '0';  // Resetar opacidade
+            }
+            
+            // Esconder HUD inicialmente
+            if (arHud) {
+                arHud.classList.remove('visible');
             }
             
             if (modelViewer && modelViewer.canActivateAR) {

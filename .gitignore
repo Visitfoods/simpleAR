@@ -1,0 +1,45 @@
+# Ficheiros do sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Ficheiros de ambiente
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Diretórios de dependências
+node_modules/
+vendor/
+
+# Ficheiros de log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+
+# Ficheiros de build
+/dist
+/build
+/out
+
+# Ficheiros de IDE e editores
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+.project
+.settings/
+*.tmproj
+.classpath
+.c9/
+
+# Outros
+*.bak
+*.tmp
+*.temp 

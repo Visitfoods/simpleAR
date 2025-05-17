@@ -334,6 +334,8 @@
             align-items: center;
             opacity: 0;
             transition: opacity 1s ease-in-out;
+            /* Escondido completamente até entrar em modo AR */
+            display: none;
         }
         
         .ar-text {
@@ -390,6 +392,8 @@
             transition: opacity 0.5s ease, transform 0.5s ease;
             pointer-events: auto;
             border: 2px solid var(--primary-color);
+            /* Escondido completamente até entrar em modo AR */
+            display: none;
         }
 
         .ar-hud.visible {
@@ -715,13 +719,15 @@
                     if (event.detail.status === 'session-started') {
                         console.log('AR iniciada - aplicando efeitos');
                         
-                        // Reiniciar o texto AR (garantir que está escondido)
+                        // Mostrar os elementos UI, mas com opacidade 0
                         if (arTextWrapper) {
+                            arTextWrapper.style.display = 'flex';
                             arTextWrapper.style.opacity = '0';
                         }
                         
-                        // Esconder HUD inicialmente
+                        // Mostrar HUD, mas com opacidade 0
                         if (arHud) {
+                            arHud.style.display = 'block';
                             arHud.style.opacity = '0';
                         }
                         
@@ -890,13 +896,14 @@
             const arTextWrapper = document.querySelector('#ar-text-wrapper');
             const arHud = document.querySelector('#ar-hud');
             
-            // Preparar o texto para AR
+            // Esconder completamente os elementos UI
             if (arTextWrapper) {
-                arTextWrapper.style.opacity = '0';  // Resetar opacidade
+                arTextWrapper.style.display = 'none';
+                arTextWrapper.style.opacity = '0';
             }
             
-            // Esconder HUD inicialmente
             if (arHud) {
+                arHud.style.display = 'none';
                 arHud.style.opacity = '0';
             }
             
